@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using src.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,29 @@ builder
         options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     );
+
+builder
+    .Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration.GetSection("JWT:Issuer").Value,
+            ValidAudience = builder.Configuration.GetSection("JWT:Audience").Value,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                System
+                    .Text
+                    .Encoding
+                    .UTF8
+                    .GetBytes(builder.Configuration.GetSection("JWT:Key").Value)
+            )
+        };
+    });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
