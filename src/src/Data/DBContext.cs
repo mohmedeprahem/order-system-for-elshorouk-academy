@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.Metrics;
+using Microsoft.EntityFrameworkCore;
 using src.Models;
 
 namespace src.Data
@@ -103,6 +104,8 @@ namespace src.Data
                     .HasForeignKey(d => d.CashierId)
                     .HasConstraintName("FK_InvoiceHeader_Cashier");
             });
+
+            modelBuilder.Entity<User>().HasIndex(c => c.Username).IsUnique(true);
         }
     }
 }
