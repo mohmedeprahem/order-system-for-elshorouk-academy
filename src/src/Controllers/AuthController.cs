@@ -25,6 +25,38 @@ namespace src.Controllers
             return View("Login");
         }
 
+        [HttpPost("/[controller]/Login")]
+        public async Task<ActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Login");
+            }
+
+            User user = await _userRepository.GetUserByUsername(model.Username);
+
+            if (user == null)
+            {
+                ModelState.AddModelError("Username", "Username not found");
+                return View("Login");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
+            {
+                ModelState.AddModelError("Password", "Incorrect password");
+                return View("Login");
+            }
+
+            string token = _jwtTokenService.GenerateToken(user);
+
+            HttpContext
+                .Response
+                .Cookies
+                .Append("token", token, new CookieOptions { HttpOnly = true });
+
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpPost("/[controller]/Register")]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
