@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using src.Data;
+using src.Repositories;
+using src.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,9 @@ builder
             )
         };
     });
+
+builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddScoped<UserRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

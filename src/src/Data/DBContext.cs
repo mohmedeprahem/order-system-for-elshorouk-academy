@@ -19,7 +19,7 @@ namespace src.Data
 
         public DbSet<InvoiceHeader> InvoiceHeaders { get; set; }
 
-        public DbSet<User> users { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
             optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
