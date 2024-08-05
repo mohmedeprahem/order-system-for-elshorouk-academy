@@ -138,5 +138,86 @@ namespace src.Controllers
 
             return View();
         }
+
+        public async Task<ActionResult> Edit(int id)
+        {
+            var invoice = await _unitOfWork
+                .InvoiceRepository
+                .GetInvoiceById(id, ["InvoiceDetails", "Cashier"]);
+            var Cashiers = await _unitOfWork.CashierRepository.getAllCashiers();
+
+            var model = new EditInvoiceViewModel
+            {
+                InvoiceId = invoice.Id,
+                CustomerName = invoice.CustomerName,
+                InvoiceDate = invoice.Invoicedate,
+                CashierId = invoice.CashierId,
+                BranchId = invoice.BranchId,
+                Cashiers = Cashiers
+                    .Select(
+                        c =>
+                            new CashierViewModel
+                            {
+                                Id = c.Id,
+                                CashierName = c.CashierName,
+                                BranchId = c.BranchId
+                            }
+                    )
+                    .ToList(),
+                Items = invoice
+                    .InvoiceDetails
+                    .Select(
+                        item =>
+                            new InvoiceItemViewModel
+                            {
+                                ItemId = item.Id,
+                                ItemName = item.ItemName,
+                                ItemPrice = item.ItemPrice,
+                                ItemCount = item.ItemCount
+                            }
+                    )
+                    .ToList()
+            };
+
+            if (invoice == null)
+            {
+                return View("NotFound");
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Edit(int id, EditInvoiceViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Edit", model);
+            }
+
+            var invoice = await _unitOfWork
+                .InvoiceRepository
+                .GetInvoiceById(id, ["InvoiceDetails", "Cashier"]);
+
+            if (invoice == null)
+            {
+                return View("NotFound");
+            }
+            else
+            {
+                invoice.CustomerName = model.CustomerName;
+                invoice.Invoicedate = model.InvoiceDate;
+                invoice.CashierId = model.CashierId;
+                invoice.BranchId = model.BranchId;
+
+                _unitOfWork.InvoiceRepository.UpdateInvoice(invoice);
+
+                await _unitOfWork.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+            }
+        }
     }
 }

@@ -58,5 +58,11 @@ namespace src.Repositories
             await _dbContext.InvoiceDetails.AddAsync(invoiceDetails);
             return invoiceDetails;
         }
+
+        public InvoiceHeader UpdateInvoice(InvoiceHeader invoice)
+        {
+            _dbContext.InvoiceHeaders.Update(invoice);
+            return invoice;
+        }
     }
 }

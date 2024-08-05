@@ -48,17 +48,17 @@
 @section Scripts {
     <script>
         document.getElementById('cashier-select').addEventListener('change', function () {
-            var selectedOption = this.options[this.selectedIndex];
-            var branchId = selectedOption.getAttribute('data-branch-id');
+            let selectedOption = this.options[this.selectedIndex];
+            let branchId = selectedOption.getAttribute('data-branch-id');
             document.getElementById('branch-id-hidden').value = branchId;
         });
 
         document.getElementById('add-item-button').addEventListener('click', function () {
-            var itemsTableBody = document.getElementById('items-table').getElementsByTagName('tbody')[0];
+            let itemsTableBody = document.getElementById('items-table').getElementsByTagName('tbody')[0];
 
-            var itemCount = itemsTableBody.getElementsByTagName('tr').length - 1;
+            let itemCount = itemsTableBody.getElementsByTagName('tr').length - 1;
 
-            var newRow = document.createElement('tr');
+            let newRow = document.createElement('tr');
 
             newRow.innerHTML = `
                         <td>
