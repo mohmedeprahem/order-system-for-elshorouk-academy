@@ -46,5 +46,17 @@ namespace src.Repositories
 
             return await query.FirstOrDefaultAsync(x => x.Id == id);
         }
+
+        public async Task<InvoiceHeader> AddInvoice(InvoiceHeader invoice)
+        {
+            await _dbContext.InvoiceHeaders.AddAsync(invoice);
+            return invoice;
+        }
+
+        public async Task<InvoiceDetail> AddInvoiceDetail(InvoiceDetail invoiceDetails)
+        {
+            await _dbContext.InvoiceDetails.AddAsync(invoiceDetails);
+            return invoiceDetails;
+        }
     }
 }
