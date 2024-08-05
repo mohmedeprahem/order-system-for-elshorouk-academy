@@ -1,0 +1,32 @@
+﻿@model IEnumerable<src.ViewModels.InvoiceViewModel>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Invoice ID</th>
+            <th>Customer Name</th>
+            <th>Invoice Date</th>
+            <th>Total Amount</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invoice in Model)
+        {
+            <tr>
+                <td>@invoice.InvoiceId</td>
+                <td>@invoice.CustomerName</td>
+                <td>@invoice.InvoiceDate.ToShortDateString()</td>
+                <td>@invoice.TotalAmount</td>
+                <td>
+                    <a href="@Url.Action("Details", new { id = invoice.InvoiceId })">View</a>
+                    <a href="@Url.Action("Edit", new { id = invoice.InvoiceId })">Edit</a>
+                    <form asp-action="Delete" asp-route-id="@invoice.InvoiceId" method="post" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a href="@Url.Action("Create")">Create New Invoice</a>

@@ -54,7 +54,7 @@ namespace src.Controllers
                 .Cookies
                 .Append("token", token, new CookieOptions { HttpOnly = true });
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Invoice");
         }
 
         [HttpPost("/[controller]/Register")]

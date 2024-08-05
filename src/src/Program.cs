@@ -39,6 +39,7 @@ builder
 
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<InvoiceRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
