@@ -11,6 +11,7 @@ namespace src.Repositories
         public UserRepository UserRepository { get; private set; }
         public InvoiceRepository InvoiceRepository { get; private set; }
         public CashierRepository CashierRepository { get; private set; }
+        public CityRepository CityRepository { get; private set; }
 
         private IDbContextTransaction _transaction;
 
@@ -20,6 +21,7 @@ namespace src.Repositories
             UserRepository = new UserRepository(_dbContext);
             InvoiceRepository = new InvoiceRepository(_dbContext);
             CashierRepository = new CashierRepository(_dbContext);
+            CityRepository = new CityRepository(_dbContext);
             _transaction = null;
         }
 

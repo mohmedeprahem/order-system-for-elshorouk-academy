@@ -1,0 +1,70 @@
+﻿@{
+    Layout = "_Layout";
+}
+@model src.ViewModels.CashierCreateViewModel
+
+<h1>Cashiers</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="CashierName" class="control-label"></label>
+        <input asp-for="CashierName" class="form-control" />
+        <span asp-validation-for="CashierName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CityId" class="control-label"></label>
+        <select id="CitySelect" asp-for="CityId" class="form-control">
+            <option value="">Select City</option>
+            @foreach (var city in Model.Cities)
+            {
+                <option value="@city.Id">@city.CityName</option>
+            }
+        </select>
+        <span asp-validation-for="CityId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BranchId" class="control-label"></label>
+        <select id="BranchSelect" asp-for="BranchId" class="form-control">
+            <option value="">Select Branch</option>
+        </select>
+        <span asp-validation-for="BranchId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const citySelect = document.getElementById('CitySelect');
+            const branchSelect = document.getElementById('BranchSelect');
+
+            // Serialize the cities data to JSON
+            const cities = @Html.Raw(Json.Serialize(Model.Cities));
+
+            citySelect.addEventListener('change', function () {
+                const cityId = this.value;
+
+                // Clear existing branches
+                branchSelect.innerHTML = '<option value="">Select Branch</option>';
+
+                if (cityId) {
+                    // Find the selected city and its branches
+                    const selectedCity = cities.find(city => city.id === parseInt(cityId));
+                    if (selectedCity) {
+                        selectedCity.branches.forEach(branch => {
+                            const option = document.createElement('option');
+                            option.value = branch.id;
+                            option.textContent = branch.branchName;
+                            branchSelect.appendChild(option);
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+}

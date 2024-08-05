@@ -42,6 +42,7 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<InvoiceRepository>();
 builder.Services.AddScoped<CashierRepository>();
 builder.Services.AddScoped<UnitOfWork>();
+builder.Services.AddScoped<CityRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

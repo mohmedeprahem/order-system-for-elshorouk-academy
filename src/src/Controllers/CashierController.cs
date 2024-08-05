@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using src.Dto;
+using src.Models;
 using src.Repositories;
 using src.ViewModels;
 
@@ -33,6 +35,31 @@ namespace src.Controllers
                 )
                 .ToList();
 
+            return View(model);
+        }
+
+        public async Task<ActionResult> Create()
+        {
+            var cities = await _unitOfWork.CityRepository.GetCities(["Branches"]);
+
+            var model = new CashierCreateViewModel
+            {
+                Cities = cities
+                    .Select(
+                        x =>
+                            new CityDto
+                            {
+                                Id = x.Id,
+                                CityName = x.CityName,
+                                Branches = x.Branches
+                                    .Select(
+                                        y => new BranchDto { Id = y.Id, BranchName = y.BranchName }
+                                    )
+                                    .ToList()
+                            }
+                    )
+                    .ToList(),
+            };
             return View(model);
         }
     }
