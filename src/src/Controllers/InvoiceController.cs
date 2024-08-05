@@ -219,5 +219,35 @@ namespace src.Controllers
                 return RedirectToAction("Index");
             }
         }
+
+        [HttpPost]
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                var invoice = await _unitOfWork
+                    .InvoiceRepository
+                    .GetInvoiceById(id, ["InvoiceDetails", "Cashier"]);
+
+                if (invoice == null)
+                {
+                    return View("NotFound");
+                }
+                else
+                {
+                    await _unitOfWork.BeginTransactionAsync();
+                    await _unitOfWork.InvoiceRepository.DeleteInvoice(invoice);
+
+                    await _unitOfWork.CommitAsync();
+
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return View();
+            }
+        }
     }
 }
