@@ -27,5 +27,10 @@ namespace src.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task AddCashier(Cashier cashier)
+        {
+            await _dbContext.Cashiers.AddAsync(cashier);
+        }
     }
 }

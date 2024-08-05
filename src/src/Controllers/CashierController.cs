@@ -62,5 +62,24 @@ namespace src.Controllers
             };
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> Create(CashierCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Create");
+            }
+
+            Cashier cashier = new Cashier
+            {
+                CashierName = model.CashierName,
+                BranchId = (int)model.BranchId
+            };
+
+            await _unitOfWork.CashierRepository.AddCashier(cashier);
+            await _unitOfWork.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
     }
 }

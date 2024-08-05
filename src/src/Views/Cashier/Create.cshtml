@@ -5,7 +5,7 @@
 
 <h1>Cashiers</h1>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create">
     <div class="form-group">
         <label asp-for="CashierName" class="control-label"></label>
         <input asp-for="CashierName" class="form-control" />
@@ -43,17 +43,14 @@
             const citySelect = document.getElementById('CitySelect');
             const branchSelect = document.getElementById('BranchSelect');
 
-            // Serialize the cities data to JSON
             const cities = @Html.Raw(Json.Serialize(Model.Cities));
 
             citySelect.addEventListener('change', function () {
                 const cityId = this.value;
 
-                // Clear existing branches
                 branchSelect.innerHTML = '<option value="">Select Branch</option>';
 
                 if (cityId) {
-                    // Find the selected city and its branches
                     const selectedCity = cities.find(city => city.id === parseInt(cityId));
                     if (selectedCity) {
                         selectedCity.branches.forEach(branch => {
