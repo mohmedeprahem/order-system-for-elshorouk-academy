@@ -48,6 +48,7 @@
                 <th>Item Name</th>
                 <th>Item Count</th>
                 <th>Item Price</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -55,22 +56,38 @@
             {
                 <tr>
                     <td>
-                        <input asp-for="@Model.Items[i].ItemName" class="form-control" />
+                        <input asp-for="@Model.Items[i].ItemName" class="form-control" id="item-name-@i" />
                         <span asp-validation-for="@Model.Items[i].ItemName" class="text-danger"></span>
                     </td>
                     <td>
-                        <input asp-for="@Model.Items[i].ItemCount" class="form-control" />
+                        <input asp-for="@Model.Items[i].ItemCount" class="form-control" id="item-count-@i"/>
                         <span asp-validation-for="@Model.Items[i].ItemCount" class="text-danger"></span>
                     </td>
                     <td>
-                        <input asp-for="@Model.Items[i].ItemPrice" class="form-control" />
+                        <input asp-for="@Model.Items[i].ItemPrice" class="form-control" id="item-price-@i"/>
                         <span asp-validation-for="@Model.Items[i].ItemPrice" class="text-danger"></span>
                     </td>
+					<td>
+                        <button type="button" class="btn btn-danger" id="delete-item" data-item-id="@Model.Items[i].ItemId">Delete</button>
+                        <button type="button" class="btn btn-primary" id="edit-item" data-item-id="@Model.Items[i].ItemId">Edit</button>
+                        <input type="hidden" name="count" value="@i" />
+					</td>
                 </tr>
             }
         </tbody>
     </table>
-    <button type="button" class="btn btn-secondary" id="add-item-button">Add Item</button>
+    <div id="add-item-container" class="form-group row">
+        <div class="col">
+            <input type="text" class="form-control item-name" placeholder="Item Name" />
+        </div>
+        <div class="col">
+            <input type="number" class="form-control item-count" placeholder="Item Count" />
+        </div>
+        <div class="col">
+            <input type="number" class="form-control item-price" placeholder="Item Price" />
+        </div>
+    </div>>
+    <button type="button" class="btn btn-secondary" id="add-item">Add Item</button>
     <button type="submit" class="btn btn-primary">Save</button>
 </form>
 
@@ -82,32 +99,72 @@
             document.getElementById('branch-id-hidden').value = branchId;
         });
 
-        document.getElementById('add-item-button').addEventListener('click', function () {
-            let itemsTableBody = document.getElementById('items-table').getElementsByTagName('tbody')[0];
+        document.getElementById('delete-item').addEventListener('click', function () {
+            let itemId = this.getAttribute('data-item-id');
+            fetch('/InvoiceDetail/Delete/${itemId}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					itemId: itemId
+				})
+                .then(response => response.json())
+				.then(data => {
+					let itemRow = document.querySelector(`tr[data-item-id="${itemId}"]`);
+					itemRow.remove();
+				})
+			})
+        });
 
-            let itemCount = itemsTableBody.getElementsByTagName('tr').length;
 
-            let newRow = document.createElement('tr');
+        document.getElementById('add-item').addEventListener('click', function () {
+			let itemContainer = document.getElementById('add-item-container');
+			let itemName = itemContainer.getElementsByClassName('item-name')[0].value;
+            let itemCount = itemContainer.getElementsByClassName('item-count')[0].value;
+			let itemPrice = itemContainer.getElementsByClassName('item-price')[0].value;
 
-            newRow.innerHTML = `
+            fetch('/InvoiceDetail/Create', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					itemName: itemName,
+					itemCount: itemCount,
+					itemPrice: itemPrice,
+                    InvoiceHeaderId: @Model.InvoiceId
+				})
+			})
+
+			.then(response => response.json())
+			.then(data => {
+                let itemsTableBody = document.getElementById('items-table').getElementsByTagName('tbody')[0];
+                let rowCount = itemsTableBody.rows.length;
+
+                let row = document.createElement('tr');
+                row.setAttribute('data-item-id', data.ItemId);
+                row.innerHTML = `
                                 <td>
-                                    <input type="text" name="Items[${itemCount}].ItemName" class="form-control" />
-                                    <span class="text-danger" data-valmsg-for="Items[${itemCount}].ItemName" data-valmsg-replace="true"></span>
+                                        <input class="form-control" name="Items[${rowCount}].ItemName" value="${itemName}" />
                                 </td>
                                 <td>
-                                    <input type="number" name="Items[${itemCount}].ItemCount" class="form-control" />
-                                    <span class="text-danger" data-valmsg-for="Items[${itemCount}].ItemCount" data-valmsg-replace="true"></span>
+                                        <input class="form-control" name="Items[${rowCount}].ItemCount" value="${itemCount}" />
                                 </td>
                                 <td>
-                                    <input type="number" step="0.01" name="Items[${itemCount}].ItemPrice" class="form-control" />
-                                    <span class="text-danger" data-valmsg-for="Items[${itemCount}].ItemPrice" data-valmsg-replace="true"></span>
+                                        <input class="form-control" name="Items[${rowCount}].ItemPrice" value="${itemPrice}" />
+                                </td>
+                                <td>
+                                <button type="button" class="btn btn-danger delete-item" data-item-id="${data.ItemId}">Delete</button>
                                 </td>
                             `;
 
-            itemsTableBody.appendChild(newRow);
-        });
+                itemsTableBody.appendChild(row);
+			})
+		});
 
         document.getElementById('cashier-select').dispatchEvent(new Event('change'));
+
 
     </script>
 }
