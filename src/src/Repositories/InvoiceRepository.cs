@@ -31,5 +31,20 @@ namespace src.Repositories
 
             return await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
         }
+
+        public async Task<InvoiceHeader> GetInvoiceById(long id, string[] includes = null)
+        {
+            IQueryable<InvoiceHeader> query = _dbContext.Set<InvoiceHeader>();
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return await query.FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }

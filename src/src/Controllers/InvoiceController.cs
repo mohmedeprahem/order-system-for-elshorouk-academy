@@ -39,5 +39,42 @@ namespace src.Controllers
 
             return View(model);
         }
+
+        public async Task<ActionResult> Details(int id)
+        {
+            var invoice = await _invoiceRepository.GetInvoiceById(
+                id,
+                ["InvoiceDetails", "Cashier"]
+            );
+
+            if (invoice == null)
+            {
+                return View();
+            }
+            else
+            {
+                var model = new InvoiceDetailsViewModel
+                {
+                    InvoiceId = invoice.Id,
+                    InvoiceDate = invoice.Invoicedate,
+                    CashierName = invoice.Cashier.CashierName,
+                    CustomerName = invoice.CustomerName,
+                    Items = invoice
+                        .InvoiceDetails
+                        .Select(
+                            item =>
+                                new InvoiceItemViewModel
+                                {
+                                    ItemName = item.ItemName,
+                                    ItemPrice = item.ItemPrice,
+                                    ItemCount = item.ItemCount,
+                                }
+                        )
+                        .ToList()
+                };
+
+                return View(model);
+            }
+        }
     }
 }

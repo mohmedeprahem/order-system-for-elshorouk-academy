@@ -1,0 +1,42 @@
+﻿@model src.ViewModels.InvoiceDetailsViewModel
+
+<h2>Invoice @Model.InvoiceId</h2>
+
+<div>
+    <p>Customer: @Model.CustomerName</p>
+    <p>Date: @Model.InvoiceDate.ToShortDateString()</p>
+    <p>Cashier: @Model.CashierName</p>
+    <p>Total Amount: @Model.TotalAmount</p>
+
+    <h4>Items</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Item Count</th>
+                <th>Item Price</th>
+                <th>Total Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.ItemName</td>
+                    <td>@item.ItemCount</td>
+                    <td>@item.ItemPrice</td>
+                    <td>@item.TotalPrice</td>
+                    <td>
+                        <a href="@Url.Action("EditItem", new { id = item.ItemId })">Edit</a>
+                        <form asp-action="DeleteItem" asp-route-id="@item.ItemId" method="post" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<a href="@Url.Action("Edit", new { id = Model.InvoiceId })">Edit Invoice</a>
