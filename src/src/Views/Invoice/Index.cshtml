@@ -1,4 +1,7 @@
-﻿@model IEnumerable<src.ViewModels.InvoiceViewModel>
+﻿@{
+    Layout = "_Layout";
+}
+@model IEnumerable<src.ViewModels.InvoiceViewModel>
 @if (!Model.Any())
 {
     <p>No invoices found.</p>
