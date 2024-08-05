@@ -54,22 +54,22 @@
         <tbody>
             @for (var i = 0; i < Model.Items.Count; i++)
             {
-                <tr>
+                <tr data-item-id="@Model.Items[i].ItemId">
                     <td>
-                        <input asp-for="@Model.Items[i].ItemName" class="form-control" id="item-name-@i" />
+                            <input asp-for="@Model.Items[i].ItemName" class="form-control" id="item-name-@Model.Items[i].ItemId" />
                         <span asp-validation-for="@Model.Items[i].ItemName" class="text-danger"></span>
                     </td>
                     <td>
-                        <input asp-for="@Model.Items[i].ItemCount" class="form-control" id="item-count-@i"/>
+                        <input asp-for="@Model.Items[i].ItemCount" class="form-control" id="item-count-@Model.Items[i].ItemId"/>
                         <span asp-validation-for="@Model.Items[i].ItemCount" class="text-danger"></span>
                     </td>
                     <td>
-                        <input asp-for="@Model.Items[i].ItemPrice" class="form-control" id="item-price-@i"/>
+                            <input asp-for="@Model.Items[i].ItemPrice" class="form-control" id="item-price-@Model.Items[i].ItemId"/>
                         <span asp-validation-for="@Model.Items[i].ItemPrice" class="text-danger"></span>
                     </td>
 					<td>
-                        <button type="button" class="btn btn-danger" id="delete-item" data-item-id="@Model.Items[i].ItemId">Delete</button>
-                        <button type="button" class="btn btn-primary" id="edit-item" data-item-id="@Model.Items[i].ItemId">Edit</button>
+                        <button type="button" class="btn btn-danger delete-item" data-item-id="@Model.Items[i].ItemId">Delete</button>
+                        <button type="button" class="btn btn-primary edit-item" data-item-id="@Model.Items[i].ItemId">Edit</button>
                         <input type="hidden" name="count" value="@i" />
 					</td>
                 </tr>
@@ -99,23 +99,6 @@
             document.getElementById('branch-id-hidden').value = branchId;
         });
 
-        document.getElementById('delete-item').addEventListener('click', function () {
-            let itemId = this.getAttribute('data-item-id');
-            fetch('/InvoiceDetail/Delete/${itemId}', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					itemId: itemId
-				})
-                .then(response => response.json())
-				.then(data => {
-					let itemRow = document.querySelector(`tr[data-item-id="${itemId}"]`);
-					itemRow.remove();
-				})
-			})
-        });
 
 
         document.getElementById('add-item').addEventListener('click', function () {
@@ -146,13 +129,13 @@
                 row.setAttribute('data-item-id', data.ItemId);
                 row.innerHTML = `
                                 <td>
-                                        <input class="form-control" name="Items[${rowCount}].ItemName" value="${itemName}" />
+                                                <input class="form-control" name="Items[${data.ItemId}].ItemName" value="${itemName}" />
                                 </td>
                                 <td>
-                                        <input class="form-control" name="Items[${rowCount}].ItemCount" value="${itemCount}" />
+                                        <input class="form-control" name="Items[${data.ItemId}].ItemCount" value="${itemCount}" />
                                 </td>
                                 <td>
-                                        <input class="form-control" name="Items[${rowCount}].ItemPrice" value="${itemPrice}" />
+                                                <input class="form-control" name="Items[${data.ItemId}].ItemPrice" value="${itemPrice}" />
                                 </td>
                                 <td>
                                 <button type="button" class="btn btn-danger delete-item" data-item-id="${data.ItemId}">Delete</button>
@@ -162,6 +145,57 @@
                 itemsTableBody.appendChild(row);
 			})
 		});
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('table').addEventListener('click', function (event) {
+                if (event.target.classList.contains('delete-item')) {
+                    let itemId = event.target.getAttribute('data-item-id');
+                    fetch(`/InvoiceDetail/Delete/${itemId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            itemId: itemId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        let itemRow = document.querySelector(`tr[data-item-id="${itemId}"]`);
+                        console.log(itemRow);
+                        if (itemRow) {
+                            itemRow.remove();
+                        }
+                    });
+                }
+
+                if (event.target.classList.contains('edit-item')) {
+                    let itemId = event.target.getAttribute('data-item-id');
+                    // Add your edit logic here
+                    let itemRow = document.querySelector(`tr[data-item-id="${itemId}"]`);
+                    let itemNameInput = itemRow.querySelector(`#item-name-${itemId}`);
+                    let itemCountInput = itemRow.querySelector(`#item-count-${itemId}`);
+                    let itemPriceInput = itemRow.querySelector(`#item-price-${itemId}`);
+
+                    fetch(`/InvoiceDetail/Edit/${itemId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            itemName: itemNameInput.value,
+							itemCount: itemCountInput.value,
+							itemPrice: itemPriceInput.value,
+                            Id: itemId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        
+                    });
+                }
+            });
+        });
 
         document.getElementById('cashier-select').dispatchEvent(new Event('change'));
 

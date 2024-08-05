@@ -107,5 +107,10 @@ namespace src.Repositories
         {
             _dbContext.InvoiceDetails.Remove(invoiceDetail);
         }
+
+        public async Task<InvoiceDetail> GetInvoiceDetailById(long id)
+        {
+            return await _dbContext.InvoiceDetails.FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }

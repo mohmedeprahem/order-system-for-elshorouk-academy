@@ -46,5 +46,43 @@ namespace src.Controllers
 
             return Ok(new { ItemId = invoiceDetail.Id });
         }
+
+        [HttpPost]
+        public async Task<ActionResult> Delete(long id)
+        {
+            var invoiceDetail = await _unitOfWork.InvoiceRepository.GetInvoiceDetailById(id);
+
+            if (invoiceDetail == null)
+            {
+                return View("NotFound");
+            }
+
+            await _unitOfWork.InvoiceRepository.DeleteInvoiceDetail(invoiceDetail);
+            await _unitOfWork.SaveChangesAsync();
+            return Ok(new { Id = id });
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> Edit([FromBody] InvoiceDetailEditViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var invoiceDetail = await _unitOfWork.InvoiceRepository.GetInvoiceDetailById(model.Id);
+
+            if (invoiceDetail == null)
+            {
+                return View("NotFound");
+            }
+
+            invoiceDetail.ItemName = model.ItemName;
+            invoiceDetail.ItemPrice = model.ItemPrice;
+            invoiceDetail.ItemCount = model.ItemCount;
+
+            await _unitOfWork.SaveChangesAsync();
+            return Ok(new { Id = invoiceDetail.Id });
+        }
     }
 }
