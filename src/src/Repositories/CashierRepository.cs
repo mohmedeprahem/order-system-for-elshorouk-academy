@@ -13,9 +13,19 @@ namespace src.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<List<Cashier>> getAllCashiers()
+        public async Task<List<Cashier>> getAllCashiers(string[] includes = null)
         {
-            return await _dbContext.Cashiers.ToListAsync();
+            IQueryable<Cashier> query = _dbContext.Set<Cashier>();
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return await query.ToListAsync();
         }
     }
 }
