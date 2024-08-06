@@ -11,8 +11,8 @@ Invoice system access with a user-friendly app.
 $ git clone https://gitlab.com/mohmedeprahem/algoriza-internship-42.git
 ```
 ## Init database
-you have to execute this file ShaTask.db in Ms Sql Server manager
-and name you database ShaTask.
+you have to execute this file ShaTaskScript.sql in Ms Sql Server management
+and name your database ShaTask.
 
 ### Update App Settings:
 Open the appsettings.json file and update the configuration settings:
