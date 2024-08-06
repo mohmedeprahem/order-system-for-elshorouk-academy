@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using src.Dto;
 using src.Models;
@@ -80,6 +81,35 @@ namespace src.Controllers
             await _unitOfWork.CashierRepository.AddCashier(cashier);
             await _unitOfWork.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        public async Task<ActionResult> Delete(int id)
+        {
+            var cashier = await _unitOfWork
+                .CashierRepository
+                .GetCashierById(id, ["InvoiceHeaders"]);
+
+            if (cashier == null)
+            {
+                return View("NotFound");
+            }
+
+            if (cashier.InvoiceHeaders.Count > 0)
+            {
+                return Json(
+                    new
+                    {
+                        success = false,
+                        message = "Cannot delete cashier with associated invoices."
+                    }
+                );
+            }
+
+            await _unitOfWork.CashierRepository.DeleteCashier(cashier);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Cashier deleted successfully." });
         }
     }
 }

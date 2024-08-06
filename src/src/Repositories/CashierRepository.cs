@@ -32,5 +32,24 @@ namespace src.Repositories
         {
             await _dbContext.Cashiers.AddAsync(cashier);
         }
+
+        public async Task<Cashier> GetCashierById(int id, string[] includes = null)
+        {
+            IQueryable<Cashier> query = _dbContext.Set<Cashier>();
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            return await query.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task DeleteCashier(Cashier cashier)
+        {
+            _dbContext.Cashiers.Remove(cashier);
+        }
     }
 }

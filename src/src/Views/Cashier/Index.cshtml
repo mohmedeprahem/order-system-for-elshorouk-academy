@@ -20,13 +20,13 @@
     <tbody>
         @foreach (var cashier in Model)
         {
-            <tr data-item-id="@cashier.Id">
+            <tr data-cashier-id="@cashier.Id">
                 <td>@cashier.Id</td>
 				<td>@cashier.CashierName</td>
 				<td>@cashier.BranchName</td>
 				<td>@cashier.CityName</td>
                 <td>
-                    <button type="button" class="btn btn-danger delete-cashier" data-item-id="@cashier.Id">Delete</button>
+                    <button type="button" class="btn btn-danger delete-cashier delete-cashier" data-cashier-id="@cashier.Id">Delete</button>
                 </td>
             </tr>
         }
@@ -35,3 +35,36 @@
 <form action="@Url.Action("Create")" method="get">
     <button type="submit" class="btn btn-secondary" id="add-cashier">Add cashier</button>
 </form>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('table').addEventListener('click', function (event) {
+                if (event.target.classList.contains('delete-cashier')) {
+                    let cashierId = event.target.getAttribute('data-cashier-id');
+                    fetch(`/Cashier/Delete/${cashierId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            cashierId: cashierId
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if(data.success) {
+                                let cashierRow = document.querySelector(`tr[data-cashier-id="${cashierId}"]`);
+                                if (cashierRow) {
+                                    cashierRow.remove();
+                                }
+                                alert(data.message); 
+                            } else {
+                                alert(data.message); 
+                            }
+                        });
+                }
+
+			});
+		});
+    </script>
+}
